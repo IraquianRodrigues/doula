@@ -312,10 +312,16 @@ export default function Home() {
 
       <section className="section about-section">
         <div className="container about-grid">
-          <div className="about-portrait" aria-hidden="true">
-            <span className="portrait-ring portrait-ring-one" />
-            <span className="portrait-ring portrait-ring-two" />
-            <span className="portrait-monogram">CN</span>
+          <div className="about-portrait">
+            <img
+              className="portrait-photo"
+              src="/cynthia-nicole-profissional.png"
+              alt="Cynthia Nicole, enfermeira especialista em Doulagem"
+              width={1122}
+              height={1402}
+              loading="lazy"
+              decoding="async"
+            />
             <span className="portrait-caption">Enfermagem + Doulagem</span>
           </div>
           <div className="about-copy">
