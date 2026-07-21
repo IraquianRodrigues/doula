@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Image from "next/image";
 
 type Package = {
   name: string;
@@ -177,18 +178,13 @@ export default function Home() {
     setStatus("sending");
 
     try {
-      const response = await fetch("/api/leads", {
+      const body = new URLSearchParams();
+      formData.forEach((value, key) => body.append(key, String(value)));
+
+      const response = await fetch("/netlify-form.html", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          city: formData.get("city"),
-          whatsapp: formData.get("whatsapp"),
-          pregnancyWeeks: formData.get("pregnancyWeeks"),
-          packageInterest: selectedPackage || null,
-          consent: formData.get("consent") === "on",
-          website: formData.get("website"),
-        }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
       });
 
       if (!response.ok) throw new Error("Não foi possível enviar");
@@ -313,14 +309,14 @@ export default function Home() {
       <section className="section about-section">
         <div className="container about-grid">
           <div className="about-portrait">
-            <img
+            <Image
               className="portrait-photo"
               src="/cynthia-nicole-profissional.png"
               alt="Cynthia Nicole, enfermeira especialista em Doulagem"
               width={1122}
               height={1402}
+              sizes="(max-width: 820px) 100vw, 440px"
               loading="lazy"
-              decoding="async"
             />
             <span className="portrait-caption">Enfermagem + Doulagem</span>
           </div>
@@ -468,7 +464,15 @@ export default function Home() {
                 <button className="text-link strong-link" type="button" onClick={() => setStatus("idle")}>Enviar outro contato <span aria-hidden="true">→</span></button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit}>
+              <form
+                name="doula-leads"
+                method="POST"
+                data-netlify="true"
+                data-netlify-honeypot="website"
+                onSubmit={handleSubmit}
+              >
+                <input type="hidden" name="form-name" value="doula-leads" />
+                <input type="hidden" name="packageInterest" value={selectedPackage} />
                 <div className="form-heading">
                   <span>Primeiro contato</span>
                   <strong>Leva menos de 1 minuto</strong>
@@ -497,7 +501,7 @@ export default function Home() {
                   <input name="website" type="text" tabIndex={-1} autoComplete="off" />
                 </label>
                 <label className="consent-field">
-                  <input name="consent" type="checkbox" required />
+                  <input name="consent" type="checkbox" value="Aceito contato pelo WhatsApp" required />
                   <span>Ao enviar, concordo em receber contato pelo WhatsApp sobre os serviços de doulagem.</span>
                 </label>
                 {status === "error" && <p className="form-error" role="alert">Não foi possível enviar agora. Confira os dados e tente novamente em instantes.</p>}
